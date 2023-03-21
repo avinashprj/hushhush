@@ -1,5 +1,13 @@
 // EXTERNAL DEPS  =============================================================
 import React, { useState } from "react";
+import { ThirdwebProvider } from "@thirdweb-dev/react";
+const activeChain = "mumbai";
+import {
+    ConnectWallet,
+    useContract,
+    useContractWrite,
+} from "@thirdweb-dev/react";
+
 // import "@fontsource/sen/400.css";
 // import "@fontsource/sen/700.css";
 import "../styles/setuFonts.css";
@@ -62,7 +70,9 @@ function MyApp({ Component, pageProps }) {
             <GlobalStyle />
             {/* <SiteHeader /> */}
 
-            {getLayout(<Component {...modifiedPageProps}></Component>)}
+            <ThirdwebProvider activeChain={activeChain}>
+                <Component {...modifiedPageProps}></Component>
+            </ThirdwebProvider>
             {/* <Footer /> */}
             <ToastContainer
                 theme="light"

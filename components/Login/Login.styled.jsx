@@ -79,4 +79,13 @@ export const LoginStyled = styled(motion.article)`
             max-width: max-content;
         }
     }
+
+    .wallet {
+        position: fixed;
+        width: 100%;
+        height: fit-content;
+        z-index: 10000000000000;
+        top: 0;
+        left: 0;
+    }
 `;

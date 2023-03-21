@@ -2,19 +2,57 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import Login from "@/components/Login/Login";
+import {
+    ConnectWallet,
+    useContract,
+    useContractWrite,
+} from "@thirdweb-dev/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-    // useEffect(() => {
-    //     const response = fetch("/api/route-name", {
-    //         method: "GET",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //     });
-    //     console.log(response, "Response");
-    // }, []);
+    // address of the account which have deployed the smart contract on the polygon network
+    const contractAddr = "0x0d42b9dc65c2Dd251C1B00F1bb5a9dc632bB38D8";
+    const { contract } = useContract(
+        "0x0d42b9dc65c2Dd251C1B00F1bb5a9dc632bB38D8"
+    );
+
+    //this function is used to get the hash value of an user from the blockcahin
+    async function getSeqImg(username) {
+        // if(!contract) return "No contract"
+        try {
+            const data = await contract?.call("getUserHash", username);
+            console.log(data, "return hash from blkchain");
+        } catch {
+            console.log("errrorr");
+        }
+    }
+
+    //this function is used to compare the stored hash of a user with the now generated one
+    async function comprHashValue(username, hash) {
+        console.log("getSeqImg");
+        console.log(contract, "woowowo");
+        // if(!contract) return "No contract"
+        try {
+            const data = await contract?.call("compareHash", username, hash);
+            console.log(data, "return bool from blkchain");
+        } catch {
+            console.log("errrorr");
+        }
+    }
+
+    // this function is called to push the hash of an user to the blockchain
+    async function setSeqImg(username, hash) {
+        const contrctAddr = { contractAddr };
+        console.log(contract, "storeHash");
+        try {
+            const data = await contract?.call("storeHash", username, hash);
+            console.log("hssh", data);
+        } catch {
+            console.log("errrorr");
+        }
+    }
+    // setSeqImg("pranav","0x1234");
     return (
         <>
             <Head>

@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { ReactElement, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-
+import { ConnectWallet } from "@thirdweb-dev/react";
 // INTERNAL DEPS  =============================================================
 import {
     Button,
@@ -97,10 +97,14 @@ const Login = () => {
             <Head>
                 <title>Sign in to Setu — Setu</title>
             </Head>
+            <div className='wallet'>
+                <ConnectWallet  />
+            </div>
 
             {/* /////////////////////////////////////////////////////////////////////////////////////////////////// */}
             {/* LHS CONTENT */}
             {/* /////////////////////////////////////////////////////////////////////////////////////////////////// */}
+
             <Element as="section" id="left-side-content" bgColour="slate-20">
                 <Row
                     gutters="medium"
