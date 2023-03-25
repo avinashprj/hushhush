@@ -1,6 +1,8 @@
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useContract } from "@thirdweb-dev/react";
+
 import {
     Button,
     Card,
@@ -603,6 +605,10 @@ const hts = [
 ];
 
 export function ImageGrid({ showCategory = false, initialImageSet, context }) {
+    const contractAddr = "0x0d42b9dc65c2Dd251C1B00F1bb5a9dc632bB38D8";
+    const { contract, contractisLoading, error } = useContract(
+        "0x0d42b9dc65c2Dd251C1B00F1bb5a9dc632bB38D8"
+    );
     const router = useRouter();
     const [keywordInput, setKeywordInput] = useState("random");
     const userName = useAuthStore((state) => state.userName);
@@ -621,6 +627,29 @@ export function ImageGrid({ showCategory = false, initialImageSet, context }) {
             createUserData();
         }
     };
+    const getSeqImg = (userName) => {
+        console.log("getSeqImg");
+        console.log(contract, "woowowo");
+        try {
+            const data = contract.call("getUserHash", userName);
+            //   const data2=contract.contractWrapper.readContract.compareHash("bobby","0xkritexco");
+            console.log(data, "return hash from blockchain");
+        } catch (error) {
+            console.log("error:", error);
+        }
+    };
+    const comprHashValue = async (username, hash) => {
+        console.log("compareHash");
+        console.log(contract, "woowowo");
+        // if(!contract) return "No contract"
+        try {
+            const data = await contract.call("compareHash", username, hash);
+            console.log(data, "return bool from blkchain");
+        } catch {
+            console.log("errrorr");
+        }
+    };
+
     const matchPasswordHandle = async (e) => {
         e.preventDefault();
         try {
@@ -630,11 +659,13 @@ export function ImageGrid({ showCategory = false, initialImageSet, context }) {
                 selectedImages,
             });
             if (res.status === 200) {
+                getSeqImg(email);
                 toast.success("Logged in successfully");
                 setIsLoading(false);
                 router.push("/success");
             }
         } catch (error) {
+            getSeqImg(email);
             setIsLoading(false);
             toast.error(error?.response?.data.message);
             console.log(error, "error");
@@ -650,6 +681,7 @@ export function ImageGrid({ showCategory = false, initialImageSet, context }) {
             });
             if (res.status === 201) {
                 toast.success("Password updated");
+                setSeqImg(email, res.data.hash);
                 setIsLoading(false);
                 router.push("/");
             }
@@ -697,6 +729,21 @@ export function ImageGrid({ showCategory = false, initialImageSet, context }) {
         }
     };
 
+    async function setSeqImg(username, hash) {
+        console.log("setSeqImg");
+        console.log(contract, "woowowo");
+        try {
+            const data = await contract?.call("storeHash", username, hash);
+            const data2 = await contract.contractWrapper.readContract.storeHash(
+                username,
+                hash
+            );
+
+            console.log("hssh", data);
+        } catch {
+            console.log("errrorr");
+        }
+    }
     const createUserData = async () => {
         try {
             setIsLoading(true);
@@ -708,9 +755,12 @@ export function ImageGrid({ showCategory = false, initialImageSet, context }) {
             });
 
             // Throw error with status code in case Fetch API req failed
+            console.log("ressssssssss", res);
             if (res.status === 201) {
                 setIsLoading(false);
                 toast.success("Signed up successfully");
+                console.log(email, "emailllll", res.data.hash, "hashhh");
+                setSeqImg(email, res.data.hash);
                 router.push("/");
             }
             if (res.status === 400) {
