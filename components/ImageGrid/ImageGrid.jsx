@@ -687,127 +687,125 @@ export function ImageGrid({ showCategory = false, initialImageSet, context }) {
     };
 
     const selectHandler = (image) => {
-        if (selectedImages.some((item) => item.id === image.id)) {
-            const updatedList = selectedImages.filter(
-                (item) => item.id !== image.id
-            );
-            setSelectedImages(updatedList);
-        } else {
-            setSelectedImages((prev) => [...prev, image]);
-        }
-    };
+		// if (selectedImages.some((item) => item.id === image.id)) {
+		// 	const updatedList = selectedImages.filter((item) => item.id !== image.id);
+		// 	setSelectedImages(updatedList);
+		// } else {
+		setSelectedImages((prev) => [...prev, image]);
+		// }
+	};
 
-    const createUserData = async () => {
-        try {
-            setIsLoading(true);
-            const res = await axios.post("/api/user", {
-                username: userName,
-                email,
-                ImageUrls: imageSet,
-                selectedImages,
-            });
+	const getAllIndex = (imageURL) => {
+		const allIndex = selectedImages
+			.map((car, i) => (car.imageURL === imageURL ? i : -1))
+			.filter((index) => index !== -1);
 
-            // Throw error with status code in case Fetch API req failed
-            if (res.status === 201) {
-                setIsLoading(false);
-                toast.success("Signed up successfully");
-                router.push("/");
-            }
-            if (res.status === 400) {
-                toast.error("User already Exists");
-                setIsLoading(false);
-            }
-        } catch (error) {
-            toast.error(error.response.data.message);
-            setIsLoading(false);
-        }
-    };
-    return (
-        <ImageGridStyled>
-            {showCategory ? (
-                <Element
-                    as="div"
-                    isFullWidth
-                    verticallyCenterItems
-                    paddingLeft="nano"
-                    paddingRight="nano"
-                    marginBottom="micro"
-                >
-                    <InputField
-                        type="text"
-                        value={keywordInput}
-                        placeholder="Type keyword to generate images eg: cat"
-                        onChange={(e) => setKeywordInput(e?.target?.value)}
-                    />
-                    <Button
-                        kind="secondary"
-                        size="small"
-                        marginLeft="micro"
-                        onClick={() => handleKeywordChange()}
-                    >
-                        Generate
-                    </Button>
-                </Element>
-            ) : null}
+		return allIndex;
+	};
 
-            {imageSet.length ? (
-                <Card shape="rounded" className="image-grid" padding="nano">
-                    {imageSet?.map((currentImage) => {
-                        const isSelected = selectedImages.some(
-                            (selectedImage) =>
-                                selectedImage.id === currentImage.id
-                        );
-                        return (
-                            <Element
-                                as="div"
-                                key={currentImage.id}
-                                className="image-item-containter is-clickable"
-                                onClick={() => selectHandler(currentImage)}
-                            >
-                                <Element as="div" className="image-item-badge">
-                                    <Text textColor="white" size="small">
-                                        {isSelected
-                                            ? selectedImages.findIndex(
-                                                  (selectedImage) =>
-                                                      selectedImage.id ===
-                                                      currentImage.id
-                                              ) + 1
-                                            : null}
-                                    </Text>
-                                </Element>
+	const createUserData = async () => {
+		try {
+			setIsLoading(true);
+			const res = await axios.post("/api/user", {
+				username: userName,
+				email,
+				ImageUrls: imageSet,
+				selectedImages,
+			});
 
-                                <Element
-                                    as="div"
-                                    className={`image-item ${
-                                        isSelected ? `image-selected` : ""
-                                    }`}
-                                >
-                                    <Image
-                                        src={currentImage.imageURL}
-                                        alt="random image"
-                                        fill
-                                        style={{ objectFit: "cover" }}
-                                    />
-                                </Element>
-                            </Element>
-                        );
-                    })}
-                </Card>
-            ) : (
-                <>
-                    <Spinner />
-                </>
-            )}
-            <Element as="div" marginTop="nano" horizontallyCenterThis>
-                <Button
-                    kind="primary"
-                    disabled={selectedImages.length === 0 ? true : false}
-                    isLoading={isLoading}
-                    onClick={(e) => handleSubmit(e)}
-                >
-                    Submit
-                </Button>
-            </Element>
-        </ImageGridStyled>
-    );
+			// Throw error with status code in case Fetch API req failed
+			if (res.status === 201) {
+				setIsLoading(false);
+				toast.success("Signed up successfully");
+				router.push("/");
+			}
+			if (res.status === 400) {
+				toast.error("User already Exists");
+				setIsLoading(false);
+			}
+		} catch (error) {
+			toast.error(error.response.data.message);
+			setIsLoading(false);
+		}
+	};
+	return (
+		<ImageGridStyled>
+			{showCategory ? (
+				<Element
+					as="div"
+					isFullWidth
+					verticallyCenterItems
+					paddingLeft="nano"
+					paddingRight="nano"
+					marginBottom="micro"
+				>
+					<InputField
+						type="text"
+						value={keywordInput}
+						placeholder="Type keyword to generate images eg: cat"
+						onChange={(e) => setKeywordInput(e?.target?.value)}
+					/>
+					<Button kind="secondary" size="small" marginLeft="micro" onClick={() => handleKeywordChange()}>
+						Generate
+					</Button>
+				</Element>
+			) : null}
+
+			{imageSet.length ? (
+				<>
+					<Element as="div" verticallyCenterItems className="flex-end" marginBottom="nano" marginRight="nano">
+						<Button kind="secondary" size="small" onClick={() => setSelectedImages([])}>
+							Reset
+						</Button>
+					</Element>
+					<Card shape="rounded" className="image-grid" padding="nano">
+						{imageSet?.map((currentImage) => {
+							const isSelected = selectedImages.some(
+								(selectedImage) => selectedImage.id === currentImage.id
+							);
+							const currentIndexValue = getAllIndex(currentImage.imageURL);
+
+							return (
+								<Element
+									as="div"
+									key={currentImage.id}
+									className="image-item-containter is-clickable"
+									onClick={() => selectHandler(currentImage)}
+								>
+									<Element as="div" className="image-item-badge">
+										<Text textColor="white" size="small">
+											{isSelected ? currentIndexValue[currentIndexValue.length - 1] + 1 : null}
+										</Text>
+									</Element>
+
+									<Element as="div" className={`image-item ${isSelected ? `image-selected` : ""}`}>
+										<Image
+											src={currentImage.imageURL}
+											alt="random image"
+											fill
+											style={{ objectFit: "cover" }}
+										/>
+									</Element>
+								</Element>
+							);
+						})}
+					</Card>
+				</>
+			) : (
+				<>
+					<Spinner />
+				</>
+			)}
+			<Element as="div" marginTop="nano" horizontallyCenterThis>
+				<Button
+					kind="primary"
+					disabled={selectedImages.length === 0 ? true : false}
+					isLoading={isLoading}
+					onClick={(e) => handleSubmit(e)}
+				>
+					Submit
+				</Button>
+			</Element>
+		</ImageGridStyled>
+	);
 }

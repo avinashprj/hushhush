@@ -637,7 +637,6 @@ const SignUp = () => {
     const setEmail = useAuthStore((state) => state.setEmail);
     const [isLoading, setIsLoading] = useState(false);
 
-    console.log(email, "asd");
     const [signUpError, setSignUpError] = useState("");
     const [imageSet, setImageSet] = useState([]);
 
@@ -646,15 +645,15 @@ const SignUp = () => {
             `${APIURL}${encodeURIComponent("random")}&image_type=photo`
         );
 
-        const allImages = hts.reduce((acc, curr) => {
-            acc.push({ id: curr.id, imageURL: curr.webformatURL });
-            return acc;
-        }, []);
+        // const allImages = hts.reduce((acc, curr) => {
+		// 	acc.push({ id: curr.id, imageURL: curr.webformatURL });
+		// 	return acc;
+		// }, []);
 
-        // const allImages = data.hits.reduce((acc, curr) => {
-        // 	acc.push({ id: curr.id, imageURL: curr.webformatURL });
-        // 	return acc;
-        // }, []);
+        const allImages = data.hits.reduce((acc, curr) => {
+        	acc.push({ id: curr.id, imageURL: curr.webformatURL });
+        	return acc;
+        }, []);
         const reducedImages = shuffleArr(allImages);
         const totalImages = reducedImages.splice(0, 9);
         setImageSet(totalImages);

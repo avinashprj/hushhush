@@ -61,7 +61,6 @@ const Login = () => {
     const [isSearchModalVisible, setIsSearchModalVisible] = useState(false);
 
     const getUserData = async () => {
-        console.log(email, "email");
         try {
             setIsLoading(true);
             const { data } = await axios.post("/api/login", {

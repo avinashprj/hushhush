@@ -74,4 +74,7 @@ export const GlobalStyle = createGlobalStyle`
       font-weight:700;
     }
 
+     .flex-end {
+        justify-content:flex-end;
+    }
 `;
